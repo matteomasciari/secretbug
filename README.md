@@ -137,4 +137,4 @@ The game mechanics are used under the **Creative Commons Attribution-NonCommerci
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE).
+Licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0](LICENSE).
