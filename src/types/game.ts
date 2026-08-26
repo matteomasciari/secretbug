@@ -49,7 +49,7 @@ export interface VoteRecord {
 
 export interface RoomSettings {
   name: string;
-  maxPlayers: number; // 5-10
+  maxPlayers: number; // 5-100
   hasPassword: boolean;
 }
 
@@ -116,6 +116,7 @@ export interface PublicPlayer {
 export interface ClientGameState {
   roomId: string;
   roomName: string;
+  maxPlayers: number;
   phase: GamePhase;
   players: PublicPlayer[];
   leadEngineerId: string | null;
@@ -159,7 +160,7 @@ export const ROLE_TEAM: Record<Role, Team> = {
 };
 
 export const MIN_PLAYERS = 5;
-export const MAX_PLAYERS = 10;
+export const MAX_PLAYERS = 100;
 export const STABILE_GOAL = 5;
 export const CRITICO_GOAL = 3;
 export const EXECUTION_UNLOCK_AT_CRITICO = 2;
@@ -182,5 +183,10 @@ export function roleCountsForPlayers(count: number): {
     9: { devops: 5, hackers: 3 },
     10: { devops: 6, hackers: 3 },
   };
-  return table[count];
+  if (table[count]) return table[count];
+
+  // Beyond the canonical 5-10 spread, hold the Hacker team at ~30% of the
+  // roster so it stays a minority even as lobbies scale up to 100 players.
+  const hackers = Math.round(count * 0.3);
+  return { devops: count - hackers - 1, hackers };
 }

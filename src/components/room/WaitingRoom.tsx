@@ -59,7 +59,7 @@ export function WaitingRoom({
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Users className="size-4" />
         <span>
-          {state.players.length}/{10} engineers connected
+          {state.players.length}/{state.maxPlayers} engineers connected
         </span>
         {state.players.length < 5 && (
           <span className="text-hacker">(need {5 - state.players.length} more to start)</span>

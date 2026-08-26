@@ -58,6 +58,7 @@ export function buildClientState(room: RoomState, viewerId: string): ClientGameS
   return {
     roomId: room.id,
     roomName: room.settings.name,
+    maxPlayers: room.settings.maxPlayers,
     phase: game.phase,
     players,
     leadEngineerId: game.leadEngineerId,

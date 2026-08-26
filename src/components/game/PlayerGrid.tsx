@@ -5,7 +5,7 @@ import type { ClientGameState } from "@/types/game";
 
 export function PlayerGrid({ state }: { state: ClientGameState }) {
   return (
-    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
+    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
       {state.players.map((p) => (
         <PlayerSeat
           key={p.id}

@@ -15,15 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useLobbyBrowser } from "@/hooks/useLobbyBrowser";
 import { getSavedNickname, rememberRoom } from "@/lib/identity";
+import { MAX_PLAYERS, MIN_PLAYERS } from "@/types/game";
 
 export function CreateLobbyModal() {
   const router = useRouter();
@@ -32,7 +26,7 @@ export function CreateLobbyModal() {
   const [lobbyName, setLobbyName] = useState("");
   const [password, setPassword] = useState("");
   const [hostNickname, setHostNickname] = useState(getSavedNickname());
-  const [maxPlayers, setMaxPlayers] = useState("10");
+  const [maxPlayers, setMaxPlayers] = useState(10);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +42,7 @@ export function CreateLobbyModal() {
       lobbyName: lobbyName.trim(),
       password,
       hostNickname: hostNickname.trim(),
-      maxPlayers: Number(maxPlayers),
+      maxPlayers,
     });
     setLoading(false);
     if (!res.ok || !res.roomId) {
@@ -108,22 +102,18 @@ export function CreateLobbyModal() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="max-players">Max Players</Label>
-            <Select
+            <Label htmlFor="max-players">Max Players ({MIN_PLAYERS}-{MAX_PLAYERS})</Label>
+            <Input
+              id="max-players"
+              type="number"
+              min={MIN_PLAYERS}
+              max={MAX_PLAYERS}
               value={maxPlayers}
-              onValueChange={(value) => value && setMaxPlayers(value)}
-            >
-              <SelectTrigger id="max-players" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[5, 6, 7, 8, 9, 10].map((n) => (
-                  <SelectItem key={n} value={String(n)}>
-                    {n} players
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(e) => setMaxPlayers(Number(e.target.value))}
+              onBlur={() =>
+                setMaxPlayers((v) => Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, v || MIN_PLAYERS)))
+              }
+            />
           </div>
           {error && <p className="text-sm text-hacker">{error}</p>}
           <DialogFooter>
