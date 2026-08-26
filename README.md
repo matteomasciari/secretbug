@@ -5,7 +5,7 @@
 **A real-time social deduction game for software developers.**
 
 [![Publish Docker image](https://github.com/matteomasciari/secretbug/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/matteomasciari/secretbug/actions/workflows/docker-publish.yml)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg?style=flat-square&logo=creative-commons)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-realtime-black?logo=socket.io)](https://socket.io)
 [![Docker](https://img.shields.io/badge/ghcr.io-matteomasciari%2Fsecretbug-2496ED?logo=docker&logoColor=white)](https://github.com/matteomasciari/secretbug/pkgs/container/secretbug)
