@@ -9,6 +9,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-realtime-black?logo=socket.io)](https://socket.io)
 [![Docker](https://img.shields.io/badge/ghcr.io-matteomasciari%2Fsecretbug-2496ED?logo=docker&logoColor=white)](https://github.com/matteomasciari/secretbug/pkgs/container/secretbug)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-Donate%20a%20coffee-ff5e5b?style=flat-square&logo=ko-fi)](https://ko-fi.com/matteomasciari)
 
 </div>
 
@@ -134,6 +135,18 @@ This project is an open-source, developer-themed re-skin inspired by the board g
 *Secret Bug* is an independent project and is not affiliated with, endorsed by, or sponsored by Goat, Wolf, & Cabbage LLC.
 
 The game mechanics are used under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)** license.
+
+## Support the Project
+
+**Secret Bug** is and will always be **100% free, ad-free, and open-source**. 
+
+However, keeping real-time multiplayer servers running, managing WebSocket infrastructure, and renewing domain names incurs ongoing hosting costs.
+
+If you enjoy playing the game with your colleagues, use it for team-building sessions, or simply want to support independent open-source software, buying me a coffee is a great way to keep the servers online and low-latency for everyone!
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-ff5e5b?style=flat-square&logo=ko-fi)](https://ko-fi.com/matteomasciari)
+
+*Thank you for supporting open-source development!* 🚀
 
 ## License
 
