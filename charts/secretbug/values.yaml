@@ -1,0 +1,107 @@
+# Default values for secretbug.
+
+# -- Number of pod replicas.
+# IMPORTANT: room/game state is kept in-process memory (src/server/rooms.ts),
+# and Socket.IO uses its default in-memory adapter. Running more than one
+# replica splits players across independent, non-synchronized game states.
+# Do not raise this above 1 unless a shared Socket.IO adapter (e.g. Redis) is
+# added to the app first.
+replicaCount: 1
+
+image:
+  repository: ghcr.io/matteomasciari/secretbug
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag; defaults to the chart's appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  # NOTE: Socket.IO needs WebSocket upgrades to pass through the ingress
+  # controller. For ingress-nginx this works out of the box; for other
+  # controllers you may need to add annotations to allow the Upgrade/
+  # Connection headers and raise proxy timeouts, e.g.:
+  #   nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+  #   nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  annotations: {}
+  hosts:
+    - host: secretbug.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: secretbug-tls
+  #    hosts:
+  #      - secretbug.local
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# -- Extra environment variables for the container.
+env: []
+#  - name: HOST
+#    value: "0.0.0.0"
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 15
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# -- Disabled by default: horizontal scaling is not safe with the current
+# in-memory game state (see the replicaCount note above).
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

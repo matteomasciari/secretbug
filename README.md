@@ -105,10 +105,94 @@ docker run -p 3000:3000 secretbug
 
 The container listens on `$PORT` (default `3000`).
 
+## Running on Kubernetes (Helm)
+
+A Helm chart lives in [`charts/secretbug`](charts/secretbug). By default it
+deploys the image published to GHCR (`ghcr.io/matteomasciari/secretbug`) as a
+single-replica `Deployment` behind a `ClusterIP` `Service`, running as a
+non-root user with all Linux capabilities dropped.
+
+Requires Helm 3 and a Kubernetes cluster.
+
+```bash
+# Install with the defaults
+helm install secretbug ./charts/secretbug -n secretbug --create-namespace
+
+# Reach it locally without an ingress
+kubectl port-forward -n secretbug svc/secretbug 8080:80   # → http://localhost:8080
+```
+
+Expose it through an ingress:
+
+```bash
+helm install secretbug ./charts/secretbug -n secretbug --create-namespace \
+  --set ingress.enabled=true \
+  --set ingress.className=nginx \
+  --set 'ingress.hosts[0].host=secretbug.example.com' \
+  --set 'ingress.hosts[0].paths[0].path=/' \
+  --set 'ingress.hosts[0].paths[0].pathType=Prefix'
+```
+
+Or keep your settings in a values file:
+
+```yaml
+# my-values.yaml
+image:
+  tag: "1.0.0"          # defaults to the chart's appVersion ("latest")
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  hosts:
+    - host: secretbug.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: secretbug-tls
+      hosts:
+        - secretbug.example.com
+```
+
+```bash
+helm upgrade --install secretbug ./charts/secretbug -f my-values.yaml
+helm uninstall secretbug
+```
+
+Commonly tuned values (see [`values.yaml`](charts/secretbug/values.yaml) for
+the full list):
+
+| Value                         | Default                            | Description                                   |
+| ----------------------------- | ---------------------------------- | --------------------------------------------- |
+| `image.repository`            | `ghcr.io/matteomasciari/secretbug` | Container image                               |
+| `image.tag`                   | chart `appVersion` (`latest`)      | Image tag                                     |
+| `replicaCount`                | `1`                                | Pod replicas (see the warning below)          |
+| `service.type` / `service.port` | `ClusterIP` / `80`               | Service exposure                              |
+| `ingress.enabled`             | `false`                            | Create an `Ingress`                           |
+| `resources`                   | 100m/128Mi requests, 500m/512Mi limits | Container resources                       |
+| `env`                         | `[]`                               | Extra container environment variables         |
+| `podDisruptionBudget.enabled` | `false`                            | Create a `PodDisruptionBudget`                |
+
+> [!WARNING]
+> **Do not run more than one replica.** Room and game state lives in the memory
+> of the Node.js process and Socket.IO uses its default in-memory adapter, so
+> multiple pods would split players across independent, unsynchronized games.
+> That is why `replicaCount` defaults to `1` and autoscaling is disabled.
+> Scaling out first requires a shared Socket.IO adapter (e.g. Redis). For the
+> same reason, a pod restart or upgrade ends any game in progress.
+
+Socket.IO connects on `/api/socket` and needs WebSocket upgrades to pass
+through your ingress controller. This works out of the box with ingress-nginx;
+other controllers may need extra annotations, and long proxy timeouts (as in
+the example above) avoid idle connections being dropped mid-game.
+
 ## Project structure
 
 ```
 server.ts                    # boots Next.js + attaches the Socket.IO server
+charts/secretbug/            # Helm chart for Kubernetes deployments
 src/
   types/                     # shared domain types & socket event contracts
   server/

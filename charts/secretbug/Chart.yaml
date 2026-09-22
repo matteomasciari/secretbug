@@ -1,0 +1,15 @@
+apiVersion: v2
+name: secretbug
+description: Helm chart for Secret Bug, a real-time social deduction game built with Next.js and Socket.IO
+type: application
+version: 0.1.0
+appVersion: "latest"
+home: https://github.com/matteomasciari/secretbug
+sources:
+  - https://github.com/matteomasciari/secretbug
+keywords:
+  - game
+  - nextjs
+  - socket.io
+maintainers:
+  - name: matteomasciari

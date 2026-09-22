@@ -1,0 +1,28 @@
+Secret Bug is deployed.
+
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+Visit http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}{{ (index .paths 0).path }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+Get the application URL by running:
+  export NODE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "secretbug.fullname" . }})
+  export NODE_IP=$(kubectl get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+It may take a few minutes for the LoadBalancer IP to be available.
+  export SERVICE_IP=$(kubectl get svc {{ include "secretbug.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+Get the application URL by running:
+  export POD_NAME=$(kubectl get pods -l "app.kubernetes.io/name={{ include "secretbug.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl port-forward $POD_NAME 8080:{{ .Values.service.targetPort }}
+  echo http://127.0.0.1:8080
+{{- end }}
+
+IMPORTANT: game/room state lives in the process memory of a single pod, and
+Socket.IO uses its default in-memory adapter. Do not scale this release
+beyond 1 replica (replicaCount or autoscaling.maxReplicas) unless the app is
+first updated to use a shared Socket.IO adapter (e.g. the Redis adapter) -
+otherwise players will be randomly split across pods with different, out of
+sync game state.
